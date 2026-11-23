@@ -1,0 +1,57 @@
+server:
+  address: 127.0.0.1
+  port: ${HF_BACKEND_PORT:8090}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${HF_SECURE_COOKIE:false}
+
+hf:
+  demo-seed: ${HF_SEED:false}
+  demo-password: ${HF_DEMO_PASSWORD:}
+  events:
+    enabled: ${HF_EVENTS_ENABLED:false}
+    nameserver: 127.0.0.1:${HF_MQ_NAMESERVER_PORT:49876}
+  operations-cache: ${HF_OPERATIONS_CACHE:false}
+
+spring:
+  application:
+    name: home-fulfillment
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+  datasource:
+    url: jdbc:mysql://127.0.0.1:${HF_MYSQL_PORT:43307}/home_fulfillment?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&sslMode=DISABLED&allowPublicKeyRetrieval=true
+    username: hf_app
+    password: ${HF_DB_APP_PASSWORD}
+    hikari:
+      connection-timeout: 5000
+  flyway:
+    user: hf_migrator
+    password: ${MYSQL_PASSWORD}
+    clean-disabled: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: ${HF_REDIS_PORT:46379}
+      connect-timeout: 300ms
+      timeout: 300ms
+
+management:
+  health:
+    redis:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
